@@ -92,3 +92,37 @@ video {
     display: flex;
     gap: 10px;
 }
+
+.chat-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 300px;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.chat-messages div {
+    background-color: #f0f2f5;
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+#chat-input {
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
