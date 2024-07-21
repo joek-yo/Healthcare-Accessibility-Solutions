@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telemedicine Video Consultation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>Telemedicine Video Consultation</h1>
+        <div class="actions">
+            <button class="btn" id="startButton">Start Consultation</button>
+            <button class="btn" id="endButton" disabled>End Consultation</button>
+        </div>
+    </div>
+    <div id="video-grid"></div>
+    <script>
+        const socket = io('/');
+        const videoGrid = document.getElementById('video-grid');
+        const myVideo = document.createElement('video');
+        myVideo.muted = true;
+
+        let myVideoStream;
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            }).then(stream => {
+                myVideoStream = stream;
+                addVideoStream(myVideo, stream);
+
+                socket.on('user-connected', userId => {
+                    connectToNewUser(userId, stream);
+                });
+            });
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('endButton').disabled = false;
+        });
+
+        document.getElementById('endButton').addEventListener('click', () => {
+            myVideoStream.getTracks().forEach(track => track.stop());
+            socket.disconnect();
+            document.getElementById('startButton').disabled = false;
+            document.getElementById('endButton').disabled = true;
+        });
+
+        socket.on('user-disconnected', userId => {
+            if (peers[userId]) peers[userId].close();
+        });
+
+        const peers = {};
+
+        function connectToNewUser(userId, stream) {
+            const call = myPeer.call(userId, stream);
+            const video = document.createElement('video');
+            call.on('stream', userVideoStream => {
+                addVideoStream(video, userVideoStream);
+            });
+            call.on('close', () => {
+                video.remove();
+            });
+            peers[userId] = call;
+        }
+
+        function addVideoStream(video, stream) {
+            video.srcObject = stream;
+            video.addEventListener('loadedmetadata', () => {
+                video.play();
+            });
+            videoGrid.append(video);
+        }
+
+        const myPeer = new Peer(undefined, {
+            path: '/peerjs',
+            host: '/',
+            port: '5000'
+        });
+
+        myPeer.on('open', id => {
+            socket.emit('join-room', ROOM_ID, id);
+        });
+    </script>
+</body>
+</html>
