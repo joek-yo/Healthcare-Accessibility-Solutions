@@ -171,3 +171,32 @@ video {
     border-radius: 4px;
     margin-bottom: 10px;
 }
+
+
+/* login and registration styles */
+#error-message {
+    color: red;
+}
+
+#auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#login-section, #register-section {
+    margin-bottom: 20px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+}
